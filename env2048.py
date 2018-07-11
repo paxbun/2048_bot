@@ -142,6 +142,7 @@ class env2048:
                                 self.table[k][j] = 0
                                 self.table_tmp[k][j] = False
                                 rtn = True
+        env.init_tmp()
         return rtn
 
     # Yields the sum of all numbers
@@ -176,7 +177,6 @@ def main():
         'E' : 4,
     }
     while NoMove or env.add_number():
-        env.init_tmp()
         env.print_state()
         NoMove = False
         i = input('WASD: ').upper()
