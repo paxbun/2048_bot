@@ -43,8 +43,7 @@ class env2048:
             for j in range(0, self.width):
                 self.table_tmp[i][j] = False
 
-    # Add a number to a randomly selected empty black.
-    # The number is 2 or 4.
+    # Add 2 or 4 to a randomly selected empty block
     def add_number(self):
         spaces = self.get_spaces()
         if len(spaces) == 0:
