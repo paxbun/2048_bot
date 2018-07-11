@@ -27,6 +27,8 @@ class env2048:
         # Height of the table
         self.height = height
 
+    # Yields the list of coordinates of empty blocks
+    # [i, j] means self.table[i][j]
     def get_spaces(self):
         rtn = []
         for i in range(0, self.height):
@@ -35,11 +37,14 @@ class env2048:
                     rtn.append([i, j])
         return rtn
 
+    # Initializes self.table_tmp
     def init_tmp(self):
         for i in range(0, self.height):
             for j in range(0, self.width):
                 self.table_tmp[i][j] = False
 
+    # Add a number to a randomly selected empty black.
+    # The number is 2 or 4.
     def add_number(self):
         spaces = self.get_spaces()
         if len(spaces) == 0:
@@ -50,7 +55,7 @@ class env2048:
         self.table[space_to_add[0]][space_to_add[1]] = number_to_add
         return True
 
-    # Swipe to particular direction
+    # Swipe the numbers to particular direction
     # directions
     # 0 : Right
     # 1 : Top
@@ -148,6 +153,7 @@ class env2048:
                 rtn = self.table[i][j] + rtn
         return rtn
 
+    # Prints the current state
     def print_state(self):
         print('Turn: ' + str(self.turn))
         print('Score: ' + str(self.score))
