@@ -1,13 +1,12 @@
 from env2048 import env2048
 
 env = env2048(4, 4)
-
-done = False
-
-class gym2048() :
-    def __init__(self):
-
-
-while not done :
-    action = int(input())
-    env2048.env
+no_move = False
+while no_move or env.add_number():
+    env.print_state()
+    no_move = False
+    i = int(input())
+    if i >= 0 and i < 4:
+        env.swipe(i)
+    else:
+        exit()
