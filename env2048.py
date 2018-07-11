@@ -142,7 +142,7 @@ class env2048:
                                 self.table[k][j] = 0
                                 self.table_tmp[k][j] = False
                                 rtn = True
-        env.init_tmp()
+        self.init_tmp()
         return rtn
 
     # Yields the sum of all numbers
