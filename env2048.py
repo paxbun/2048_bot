@@ -6,16 +6,16 @@ class game2048:
         # Contains information about state of numbers
         # 0 means blank
         self.table = []
-        for i in range(0, height):
+        for i in range(height):
             table_tmp = []
-            for j in range(0, width):
+            for j in range(width):
                 table_tmp.append(0)
             self.table.append(table_tmp)
         # Prevent multiple merges at once
         self.table_tmp = []
-        for i in range(0, height):
+        for i in range(height):
             table_tmp = []
-            for j in range(0, width):
+            for j in range(width):
                 table_tmp.append(False)
             self.table_tmp.append(table_tmp)
         # Current turn number
@@ -31,16 +31,16 @@ class game2048:
     # [i, j] means self.table[i][j]
     def get_spaces(self):
         rtn = []
-        for i in range(0, self.height):
-            for j in range(0, self.width):
+        for i in range(self.height):
+            for j in range(self.width):
                 if self.table[i][j] == 0:
                     rtn.append([i, j])
         return rtn
 
     # Initializes self.table_tmp
     def init_tmp(self):
-        for i in range(0, self.height):
-            for j in range(0, self.width):
+        for i in range(self.height):
+            for j in range(self.width):
                 self.table_tmp[i][j] = False
 
     # Add 2 or 4 to a randomly selected empty block
@@ -64,8 +64,8 @@ class game2048:
         rtn = False
         self.turn = self.turn + 1
         if direction == 0:
-            for i in range(0, self.height):
-                for j in reversed(range(0, self.width - 1)):
+            for i in range(self.height):
+                for j in reversed(range(self.width - 1)):
                     if self.table[i][j] != 0:
                         for k in range(j, self.width - 1):
                             if self.table[i][k + 1] == 0:
@@ -84,7 +84,7 @@ class game2048:
                                 self.table_tmp[i][k] = False
                                 rtn = True
         elif direction == 1:
-            for j in range(0, self.width):
+            for j in range(self.width):
                 for i in range(1, self.height):
                     if self.table[i][j] != 0:
                         for k in reversed(range(1, i+1)):
@@ -104,7 +104,7 @@ class game2048:
                                 self.table_tmp[k][j] = False
                                 rtn = True
         elif direction == 2:
-            for i in range(0, self.height):
+            for i in range(self.height):
                 for j in range(1, self.width):
                     if self.table[i][j] != 0:
                         for k in reversed(range(1, j+1)):
@@ -124,8 +124,8 @@ class game2048:
                                 self.table_tmp[i][k] = False
                                 rtn = True
         elif direction == 3:
-            for j in range(0, self.width):
-                for i in reversed(range(0, self.height - 1)):
+            for j in range(self.width):
+                for i in reversed(range(self.height - 1)):
                     if self.table[i][j] != 0:
                         for k in range(i, self.height - 1):
                             if self.table[k + 1][j] == 0:
@@ -149,8 +149,8 @@ class game2048:
     # Yields the sum of all numbers
     def get_sum(self):
         rtn = 0
-        for i in range(0, self.height):
-            for j in range(0, self.width):
+        for i in range(self.height):
+            for j in range(self.width):
                 rtn = self.table[i][j] + rtn
         return rtn
 
@@ -158,8 +158,8 @@ class game2048:
     def print_state(self):
         print('Turn: ' + str(self.turn))
         print('Score: ' + str(self.score))
-        for i in range(0, self.height):
-            for j in range(0, self.width):
+        for i in range(self.height):
+            for j in range(self.width):
                 print(self.table[i][j], end='\t')
             print('\n', end='')
 
@@ -173,22 +173,40 @@ class env2048:
         self.previous_score = 0
         self.observation_space = self.height * self.width
         self.game = game2048(self.height, self.width)
+        self.mode_dictionary = {
+            'gap' : 0,
+            'turn' : 1
+        }
+        self.mode = 1
         self.game.add_number()
+
+    # Determines what to get as a reward.
+    # gap: a gap between scores of previous turn and current turn.
+    # turn: How much turn elapsed
+    # default is turn
+    def get_reward_by(self, mode):
+        if mode in self.mode_dictionary:
+            self.mode = self.mode_dictionary[i]
+
 
     def reset(self):
         self.game = game2048(self.height, self.width)
         self.previous_score = 0
         self.game.add_number()
 
-    # Reward is gap between scores of previous turn and current turn.
     def step(self, action):
         self.game.swipe(action)
         next_state = []
-        for i in range(0, self.height):
-            for j in range(0, self.width):
+        for i in range(self.height):
+            for j in range(self.width):
                 next_state.append(self.game.table[i][j])
-        reward = self.game.score - self.previous_score
-        self.previous_score = self.game.score
+        if self.mode == 0:
+            reward = self.game.score - self.previous_score
+            self.previous_score = self.game.score
+        elif self.mode == 1:
+            reward = self.game.turn
+        else:
+            reward = 0
         done = (len(self.game.get_spaces()) == 0)
         self.game.add_number()
         return (next_state, reward, done)
