@@ -164,6 +164,20 @@ class game2048:
             print('\n', end='')
 
 
+    def is_end(self):
+        if len(self.get_spaces()) != 0:
+            return False
+        for i in range(self.height):
+            for j in range(self.width - 1):
+                if self.table[i][j] == self.table[i][j + 1]:
+                    return False
+        for j in range(self.width):
+            for i in range(self.height - 1):
+                if self.table[i][j] == self.table[i + 1][j]:
+                    return False
+        return True
+
+
 # Encapsulates 2048 environement, and provides OpenAI-gym-like methods.
 class env2048:
     def __init__(self, height = 4, width = 4):
@@ -207,7 +221,7 @@ class env2048:
             reward = self.game.turn
         else:
             reward = 0
-        done = (len(self.game.get_spaces()) == 0)
+        done = self.game.is_end()
         self.game.add_number()
         return (next_state, reward, done)
 
@@ -229,7 +243,7 @@ def main():
         'S' : 3,
         'E' : 4,
     }
-    while NoMove or env.add_number():
+    while (not env.is_end()) and (NoMove or env.add_number()):
         env.print_state()
         NoMove = False
         i = input('WASD: ').upper()
