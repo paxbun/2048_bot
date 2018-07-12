@@ -177,6 +177,7 @@ class env2048:
 
     def reset(self):
         self.game = game2048(self.height, self.width)
+        self.previous_score = 0
         self.game.add_number()
 
     # Reward is gap between scores of previous turn and current turn.
