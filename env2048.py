@@ -163,6 +163,8 @@ class game2048:
                 print(self.table[i][j], end='\t')
             print('\n', end='')
 
+
+# Encapsulates 2048 environement, and provides OpenAI-gym-like methods.
 class env2048:
     def __init__(self, height = 4, width = 4):
         self.height = height
@@ -177,6 +179,7 @@ class env2048:
         self.game = game2048(self.height, self.width)
         self.game.add_number()
 
+    # Reward is gap between scores of previous turn and current turn.
     def step(self, action):
         self.game.swipe(action)
         next_state = []
@@ -192,6 +195,7 @@ class env2048:
     def render(self):
         self.game.print_state()
 
+# When this module is directly invoked, it executes a human-playable 2048 game.
 def main():
     i = input('Height: ')
     _i = int(i) 
