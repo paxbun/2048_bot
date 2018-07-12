@@ -11,7 +11,7 @@ from keras import losses
 
 import env2048
 
-EPISODES = 300
+EPISODES = 6000
 
 
 # 카트폴 예제에서의 DQN 에이전트
@@ -31,7 +31,7 @@ class DQNAgent:
         self.epsilon_decay = 0.999
         self.epsilon_min = 0.01
         self.batch_size = 64
-        self.train_start = 20000
+        self.train_start = 10000
 
         # 리플레이 메모리, 최대 크기 2000
         self.memory = deque(maxlen=40000)

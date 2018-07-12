@@ -186,7 +186,7 @@ class env2048:
     # default is turn
     def get_reward_by(self, mode):
         if mode in self.mode_dictionary:
-            self.mode = self.mode_dictionary[i]
+            self.mode = self.mode_dictionary[mode]
 
 
     def reset(self):
