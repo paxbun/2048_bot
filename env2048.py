@@ -1,8 +1,8 @@
 import random as R
 
-class env2048:
+class game2048:
 
-    def __init__(self, width = 4, height = 4):
+    def __init__(self, height = 4, width = 4):
         # Contains information about state of numbers
         # 0 means blank
         self.table = []
@@ -62,6 +62,7 @@ class env2048:
     # 3 : Bottom
     def swipe(self, direction):
         rtn = False
+        self.turn = self.turn + 1
         if direction == 0:
             for i in range(0, self.height):
                 for j in reversed(range(0, self.width - 1)):
@@ -162,12 +163,41 @@ class env2048:
                 print(self.table[i][j], end='\t')
             print('\n', end='')
 
+class env2048:
+    def __init__(self, height = 4, width = 4):
+        self.height = height
+        self.width = width
+        self.action_space = 4
+        self.previous_score = 0
+        self.observation_space = self.height * self.width
+        self.game = game2048(self.height, self.width)
+        self.game.add_number()
+
+    def reset(self):
+        self.game = game2048(self.height, self.width)
+        self.game.add_number()
+
+    def step(self, action):
+        self.game.swipe(action)
+        next_state = []
+        for i in range(0, self.height):
+            for j in range(0, self.width):
+                next_state.append(self.game.table[i][j])
+        reward = self.game.score - self.previous_score
+        self.previous_score = self.game.score
+        done = (len(self.game.get_spaces()) == 0)
+        self.game.add_number()
+        return (next_state, reward, done)
+
+    def render(self):
+        self.game.print_state()
+
 def main():
     i = input('Height: ')
     _i = int(i) 
     j = input('Width: ')
     _j = int(j)
-    env = env2048(_i, _j)
+    env = game2048(_i, _j)
     NoMove = False
     direction_dict = {
         'D' : 0,

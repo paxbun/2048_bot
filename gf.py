@@ -9,6 +9,8 @@ from keras.optimizers import Adam
 from keras.models import Sequential
 from keras import losses
 
+import env2048
+
 EPISODES = 300
 
 
@@ -113,9 +115,10 @@ class DQNAgent:
 
 if __name__ == "__main__":
     # CartPole-v1 환경, 최대 타임스텝 수가 500
-    env = gym.make('CartPole-v1')
-    state_size = 16
-    action_size = 4
+    # env = gym.make('CartPole-v1')
+    env = env2048.env2048(4, 4)
+    state_size = env.observation_space
+    action_size = env.action_space
 
     # DQN 에이전트 생성
     agent = DQNAgent(state_size, action_size)
@@ -135,6 +138,11 @@ if __name__ == "__main__":
             action = agent.get_action(state)
             # 선택한 행동으로 환경에서 한 타임스텝 진행
             next_state, reward, done = env.step(action)
+
+
+            print(action)
+            env.render()
+
             next_state = np.reshape(next_state, [1, state_size])
             # 에피소드가 중간에 끝나면 -100 보상
             reward = reward if not done or score == 499 else -100
