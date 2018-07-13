@@ -1,3 +1,8 @@
 __pycache__/*
 save_graph/*
 save_model/*
+.idea/2048_bot.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
