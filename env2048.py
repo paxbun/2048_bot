@@ -1,21 +1,22 @@
 import random as R
+import numpy as np
 
 class game2048:
 
-    def __init__(self, height = 4, width = 4):
+    def __init__(self, height=4, width=4):
         # Contains information about state of numbers
         # 0 means blank
         self.table = []
-        for i in range(height):
+        for _ in range(height):
             table_tmp = []
-            for j in range(width):
+            for __ in range(width):
                 table_tmp.append(0)
             self.table.append(table_tmp)
         # Prevent multiple merges at once
         self.table_tmp = []
-        for i in range(height):
+        for _ in range(height):
             table_tmp = []
-            for j in range(width):
+            for __ in range(width):
                 table_tmp.append(False)
             self.table_tmp.append(table_tmp)
         # Current turn number
@@ -62,7 +63,6 @@ class game2048:
     # 3 : Bottom
     def swipe(self, direction):
         rtn = False
-        self.turn = self.turn + 1
         if direction == 0:
             for i in range(self.height):
                 for j in reversed(range(self.width - 1)):
@@ -125,7 +125,7 @@ class game2048:
                                 rtn = True
         elif direction == 3:
             for j in range(self.width):
-                for i in reversed(range(self.height - 1)):
+                for i in reversed(range(self.height-1)):
                     if self.table[i][j] != 0:
                         for k in range(i, self.height - 1):
                             if self.table[k + 1][j] == 0:
@@ -144,6 +144,8 @@ class game2048:
                                 self.table_tmp[k][j] = False
                                 rtn = True
         self.init_tmp()
+        if rtn:
+            self.turn = self.turn + 1
         return rtn
 
     # Yields the sum of all numbers
@@ -177,10 +179,18 @@ class game2048:
                     return False
         return True
 
+    def greatest_number(self):
+        rtn = 0
+        for i in range(self.height):
+            for j in range(self.width):
+                if rtn < self.table[i][j]:
+                    rtn = self.table[i][j]
+        return rtn
+
 
 # Encapsulates 2048 environement, and provides OpenAI-gym-like methods.
 class env2048:
-    def __init__(self, height = 4, width = 4):
+    def __init__(self, height=4, width=4):
         self.height = height
         self.width = width
         self.action_space = 4
@@ -207,22 +217,22 @@ class env2048:
         self.game = game2048(self.height, self.width)
         self.previous_score = 0
         self.game.add_number()
+        return np.reshape(self.game.table, self.height* self.width)
+        
 
     def step(self, action):
-        self.game.swipe(action)
-        next_state = []
-        for i in range(self.height):
-            for j in range(self.width):
-                next_state.append(self.game.table[i][j])
+        valid = self.game.swipe(action)
+        next_state = np.reshape(self.game.table, self.height * self.width)
         if self.mode == 0:
             reward = self.game.score - self.previous_score
             self.previous_score = self.game.score
         elif self.mode == 1:
-            reward = self.game.turn
+            reward = int(valid)
         else:
             reward = 0
         done = self.game.is_end()
-        self.game.add_number()
+        if not done:
+            self.game.add_number()
         return (next_state, reward, done)
 
     def render(self):
@@ -230,10 +240,8 @@ class env2048:
 
 # When this module is directly invoked, it executes a human-playable 2048 game.
 def main():
-    i = input('Height: ')
-    _i = int(i) 
-    j = input('Width: ')
-    _j = int(j)
+    _i = int(input('Height: '))
+    _j = int(input('Width: '))
     env = game2048(_i, _j)
     NoMove = False
     direction_dict = {
@@ -243,17 +251,25 @@ def main():
         'S' : 3,
         'E' : 4,
     }
+    i = ''
     while (not env.is_end()) and (NoMove or env.add_number()):
         env.print_state()
         NoMove = False
-        i = input('WASD: ').upper()
-        if i in direction_dict:
-            j = direction_dict[i]
+        if len(i) == 0:
+            i = input('WASD: ').upper()
+        
+        _i = i[0]
+        i = i[1:]
+        
+        if _i in direction_dict:
+            j = direction_dict[_i]
             if j == 4:
                 exit()
             NoMove = not env.swipe(j)
         else:
             print('Invalid input')
+
+    exit()
 
 
 if __name__ == '__main__':
