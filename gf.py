@@ -8,7 +8,7 @@ from keras.optimizers import Adam
 from keras.models import Sequential
 import env2048
 
-EPISODES = 300
+EPISODES = 10000
 
 
 
@@ -25,9 +25,9 @@ class DoubleDQNAgent:
         self.epsilon = 1.0
         self.epsilon_decay = 0.999
         self.epsilon_min = 0.01
-        self.batch_size = 64
+        self.batch_size = 128
         self.train_start = 10000
-        self.memory = deque(maxlen=20000)
+        self.memory = deque(maxlen=80000)
 
         self.model = self.build_model()
         self.target_model = self.build_model()
