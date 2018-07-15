@@ -197,21 +197,7 @@ class env2048:
         self.previous_score = 0
         self.observation_space = self.height * self.width
         self.game = game2048(self.height, self.width)
-        self.mode_dictionary = {
-            'gap' : 0,
-            'turn' : 1
-        }
-        self.mode = 1
         self.game.add_number()
-
-    # Determines what to get as a reward.
-    # gap: a gap between scores of previous turn and current turn.
-    # turn: How much turn elapsed
-    # default is turn
-    def get_reward_by(self, mode):
-        if mode in self.mode_dictionary:
-            self.mode = self.mode_dictionary[mode]
-
 
     def reset(self):
         self.game = game2048(self.height, self.width)
@@ -223,13 +209,8 @@ class env2048:
     def step(self, action):
         valid = self.game.swipe(action)
         next_state = np.reshape(self.game.table, self.height * self.width)
-        if self.mode == 0:
-            reward = self.game.score - self.previous_score
-            self.previous_score = self.game.score
-        elif self.mode == 1:
-            reward = int(valid)
-        else:
-            reward = 0
+        reward = int(valid) * 100 + self.game.score - self.previous_score
+        self.previous_score = self.game.score
         done = self.game.is_end()
         if not done:
             self.game.add_number()
