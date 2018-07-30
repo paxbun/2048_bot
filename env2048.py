@@ -209,7 +209,7 @@ class env2048:
     def step(self, action):
         valid = self.game.swipe(action)
         next_state = np.reshape(self.game.table, self.height * self.width)
-        reward = int(valid) * 100 + self.game.score - self.previous_score
+        reward = int(not valid) * -100 + self.game.score - self.previous_score
         self.previous_score = self.game.score
         done = self.game.is_end()
         if not done:
