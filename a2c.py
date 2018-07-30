@@ -5,8 +5,8 @@ import tensorflow as tf
 
 from collections import deque
 
-np.random.seed(2)
-tf.set_random_seed(2)
+np.random.seed(3)
+tf.set_random_seed(3)
 
 
 OUTPUT_GRAPH = False
@@ -49,9 +49,13 @@ class Actor(object):
             l2 = tf.matmul(l1, w2)
             l2 = tf.nn.relu(l2)
 
-            w3 = tf.Variable(tf.random_normal(shape=[10, N_A], mean=0., stddev=0.1), name='w2')
-            self.l3 = tf.matmul(l2, w3)
-            self.hypo = tf.nn.softmax(self.l3)
+            w3 = tf.Variable(tf.random_normal(shape=[10, 6], mean=0., stddev=0.1), name='w3')
+            l3 = tf.matmul(l2, w3)
+            l3 = tf.nn.relu(l3)
+
+            w4 = tf.Variable(tf.random_normal(shape=[6, N_A], mean=0., stddev=0.1), name='w4')
+            self.l4 = tf.matmul(l3, w4)
+            self.hypo = tf.nn.softmax(self.l4)
 
         with tf.variable_scope('exp_v'):
             log_prob = tf.log(self.hypo[0, self.a])
@@ -84,13 +88,16 @@ class Critic(object):
             l1 = tf.matmul(self.s, w1)
             l1 = tf.nn.relu(l1)
 
-            w2 = tf.Variable(tf.random_normal(shape=[10, 10], mean=0., stddev=0.1), name='w2')
+            w2 = tf.Variable(tf.random_normal(shape=[10, 6], mean=0., stddev=0.1), name='w2')
             l2 = tf.matmul(l1, w2)
             l2 = tf.nn.relu(l2)
 
-            w3 = tf.Variable(tf.random_normal(shape=[10, 1], mean=0., stddev=0.1), name='w2')
-            self.l3 = tf.matmul(l2, w3)
-            self.v = tf.nn.softmax(self.l3)
+            w3 = tf.Variable(tf.random_normal(shape=[6, 3], mean=0., stddev=0.1), name='w3')
+            l3 = tf.matmul(l2, w3)
+            l3 = tf.nn.relu(l3)
+
+            w4 = tf.Variable(tf.random_normal(shape=[3, 1], mean=0., stddev=0.1), name='w4')
+            self.v = tf.matmul(l3, w4)
 
         with tf.variable_scope('squared_TD_error'):
             self.td_error = self.r + GAMMA * self.v_ - self.v
@@ -145,7 +152,7 @@ with tf.Session() as sess :
                 reward_sum.append(ep_rs_sum)
                 break
 
-        if i_episode % 10 == 0:
+        if i_episode % 200 == 0:
             if i_episode > 10:
                 print("episode:", i_episode, "  reward:", int(ep_rs_sum), " reward-mean : ",
                       deque_reduce_mean(reward_sum),
@@ -159,8 +166,8 @@ with tf.Session() as sess :
                 saver.save(sess, name)
                 print("Finished")
                 break
-            elif i_episode % 100 == 0 :
-                if i_episode % 1000 == 0:
+            elif i_episode % 1000 == 0 :
+                if i_episode % 5000 == 0:
                     name = './save_model/a2c/%d/2048_a2c.ckpt'%i_episode
                     saver.save(sess, name)
                 name = './save_model/a2c/2048_a2c.ckpt'
