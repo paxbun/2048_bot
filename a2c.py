@@ -10,8 +10,7 @@ tf.set_random_seed(2)
 
 
 OUTPUT_GRAPH = False
-MAX_EPISODE = 100000
-DISPLAY_REWARD_THRESHOLD = 200
+MAX_EPISODE = 1000000
 MAX_EP_STEPS = 2000
 RENDER = False
 GAMMA = 0.9
@@ -113,6 +112,7 @@ with tf.Session() as sess :
     actor = Actor(sess, n_features=N_F, n_actions=N_A, lr=LR_A)
     critic = Critic(sess, n_features=N_F, lr=LR_C)
     saver = tf.train.Saver()
+
     sess.run(tf.global_variables_initializer())
 
     if OUTPUT_GRAPH:
@@ -130,7 +130,7 @@ with tf.Session() as sess :
 
             s_, r, done = env.step(a)
 
-            if done: r = -7000
+            if done: r = -100
 
             track_r.append(r)
 
@@ -143,11 +143,15 @@ with tf.Session() as sess :
             if done or t >= MAX_EP_STEPS:
                 ep_rs_sum = sum(track_r)
                 reward_sum.append(ep_rs_sum)
-                if i_episode > 10 :
-                    print("episode:", i_episode, "  reward:", int(ep_rs_sum), " 10-reward-mean : ", deque_reduce_mean(reward_sum))
-                else :
-                    print("episode:", i_episode, "  reward:", int(ep_rs_sum))
                 break
+
+        if i_episode % 10 == 0:
+            if i_episode > 10:
+                print("episode:", i_episode, "  reward:", int(ep_rs_sum), " reward-mean : ",
+                      deque_reduce_mean(reward_sum),
+                      " steps : ", t)
+            else:
+                print("episode:", i_episode, "  reward:", int(ep_rs_sum))
 
         if i_episode > 10 :         #deque size should be bigger than 10
             if deque_reduce_mean(reward_sum) > 5000 :
