@@ -205,13 +205,26 @@ class env2048:
         self.game.add_number()
         return np.reshape(self.game.table, self.height* self.width)
         
-
+    """
     def step(self, action):
         valid = self.game.swipe(action)
         next_state = np.reshape(self.game.table, self.height * self.width)
         reward = int(not valid) * -100 + self.game.score - self.previous_score
         self.previous_score = self.game.score
         done = self.game.is_end()
+        if not done:
+            self.game.add_number()
+        return (next_state, reward, done)
+    """
+
+    def step(self, action): # edited
+        valid = self.game.swipe(action)
+        next_state = np.reshape(self.game.table, self.height * self.width)
+        reward = self.game.score - self.previous_score
+        self.previous_score = self.game.score
+        done = self.game.is_end()
+        if not valid :
+            done = True
         if not done:
             self.game.add_number()
         return (next_state, reward, done)
