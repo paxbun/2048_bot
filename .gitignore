@@ -1,6 +1,5 @@
 __pycache__/*
-save_graph/*
-save_model/*
+save_model/a2c/*
 .idea/2048_bot.iml
 .idea/misc.xml
 .idea/modules.xml
