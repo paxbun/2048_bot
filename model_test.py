@@ -11,7 +11,7 @@ tf.set_random_seed(2)
 
 
 OUTPUT_GRAPH = False
-MAX_EPISODE = 1
+MAX_EPISODE = 3
 DISPLAY_REWARD_THRESHOLD = 200
 MAX_EP_STEPS = 1000
 RENDER = False
@@ -123,7 +123,7 @@ with tf.Session() as sess :
     critic = Critic(sess, n_features=N_F, lr=LR_C)
     #saver = tf.train.import_meta_graph("./save_model/a2c/2048_a2c-final.ckpt.meta")
     saver = tf.train.Saver()
-    saver.restore(sess, './save_model/a2c/580000/2048_a2c.ckpt')
+    saver.restore(sess, './save_model/a2c/75000/2048_a2c.ckpt')
 
     if OUTPUT_GRAPH:
         tf.summary.FileWriter("logs/", sess.graph)
