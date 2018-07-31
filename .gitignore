@@ -1,5 +1,5 @@
 __pycache__/*
-save_model/a2c/*
+save_model/*
 .idea/2048_bot.iml
 .idea/misc.xml
 .idea/modules.xml
