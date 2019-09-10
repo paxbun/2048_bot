@@ -116,7 +116,6 @@ def main():
             print("# of episode :{}, avg score : {:.1f}".format(n_epi, score / print_interval))
             score = 0.0
 
-    env.close()
 
 
 if __name__ == '__main__':
